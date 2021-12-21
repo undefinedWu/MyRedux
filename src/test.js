@@ -2,7 +2,7 @@ import { createStore, bindActionCreators, combineReducers, applyMiddlewares } fr
 import { numType, numAction, studentAction } from './redux/action'
 import { numReducer } from './redux/reducer/other/redcuer_num'
 import { studentReducer } from './redux/reducer/other/reducer_student'
-
+import logger from 'redux-logger'
 // import { reducer } from './redux/reducer'
 
 // function reducer(state = 0, action) {
@@ -19,25 +19,25 @@ import { studentReducer } from './redux/reducer/other/reducer_student'
 //     }
 // }
 
-function logger1(store) {
-    // 返回一个dispatch创建函数
-    return function (next) {
-        console.log('logger1')
-        return function dispatch(action) {
-            next(action)
-            console.log('1', action)
-        }
-    }
-}
-function logger2(store) {
-    return function (next) {
-        console.log('logger2')
-        return function dispatch(action) {
-            next(action)
-            console.log('2', action)
-        }
-    }
-}
+// function logger1(store) {
+//     // 返回一个dispatch创建函数
+//     return function (next) {
+//         console.log('logger1')
+//         return function dispatch(action) {
+//             next(action)
+//             console.log('1', action)
+//         }
+//     }
+// }
+// function logger2(store) {
+//     return function (next) {
+//         console.log('logger2')
+//         return function dispatch(action) {
+//             next(action)
+//             console.log('2', action)
+//         }
+//     }
+// }
 
 const reducer = combineReducers({
     num: numReducer,
@@ -45,7 +45,7 @@ const reducer = combineReducers({
 })
 
 console.log('=====================================')
-const store = createStore(reducer, applyMiddlewares(logger1, logger2), {})
+const store = createStore(reducer, applyMiddlewares(logger), {})
 const num_auto_dispacth = bindActionCreators(numAction, store.dispatch)
 
 console.log(store)

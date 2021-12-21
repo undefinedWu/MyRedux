@@ -1,15 +1,3 @@
-# 下载依赖 
-***
-    yarn 
-    npm install
-***
-
-# 启动项目
-***
-    yarn start
-    npm start
-***
-
 # 项目介绍
     - 主要就是了解redux中间件的源码，写一个简易版本
         1. createStore(reducer, applyMiddleware?: Function, initialvalue?: any) 创建仓库 返回一个对象 包含 subscribe、getState、dispatch等
@@ -24,3 +12,15 @@
         5. dispatch创建函数被传递一个参数 下一个中间件返回的dispatch函数 如果当前中间件是最后一个中间件 此时就是会原本存储在仓库中的dispatch函数
         6. 最终本质就是得到一个dispatch函数 所以此时就是会返回
         7. 并且只有最后的一个中间进行了移交 此时才会使得仓库中的值发生变化
+
+## 下载依赖 
+***
+    yarn 
+    npm install
+***
+
+## 启动项目
+***
+    yarn start
+    npm start
+***
