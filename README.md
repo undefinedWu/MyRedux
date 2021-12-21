@@ -1,70 +1,26 @@
-# Getting Started with Create React App
+# 下载依赖 
+***
+    yarn 
+    npm install
+***
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 启动项目
+***
+    yarn start
+    npm start
+***
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# 项目介绍
+    - 主要就是了解redux中间件的源码，写一个简易版本
+        1. createStore(reducer, applyMiddleware?: Function, initialvalue?: any) 创建仓库 返回一个对象 包含 subscribe、getState、dispatch等
+        2. bindActionCreators(actionCollection: obejct | Function, dispatch: Function): object | Function 就是返回自动分发的函数
+        3. combineReducers(reducers: object) 合并多个reducer到最终root reducer中 此时需要对整个进行验证
+        4. applyMiddleWare(...middleWares: Function[]) 就是使用中间件 
+    - 中间件原理 见1.png (**主要就是去修改dispatch函数 因为在这个函数内部 我们可以获取oldState、newState、action**)
+        1. 本质就是一个洋葱模型
+        2. 中间件的本质就是修改dispatch函数 因为在当前函数 我们可以拿到oldState、action、newState
+        3. 中间件是一个dispatch创建函数
+        4. 中间件被传递一个参数 store store就是仓库对象 但是只存在两个属性 getState => 获取状态 dispatch最终存储在仓库中的dispatch函数
+        5. dispatch创建函数被传递一个参数 下一个中间件返回的dispatch函数 如果当前中间件是最后一个中间件 此时就是会原本存储在仓库中的dispatch函数
+        6. 最终本质就是得到一个dispatch函数 所以此时就是会返回
+        7. 并且只有最后的一个中间进行了移交 此时才会使得仓库中的值发生变化
