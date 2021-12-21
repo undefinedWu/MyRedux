@@ -1,0 +1,5 @@
+export { createStore } from './methods/createStore'
+export { bindActionCreators } from './methods/bindActionCreators'
+export { combineReducers } from './methods/combineReducers'
+export { applyMiddlewares } from './methods/applyMiddleWare'
+export { compose } from './methods/compose'
