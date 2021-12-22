@@ -1,6 +1,6 @@
 export function isPlainObject(action) {
     if (typeof action !== 'object' || action === null) {
-        throw new Error('Expected action to be a object')
+        throw new Error('Expected action to be a plain object')
     }
 
     const __proto = Object.getPrototypeOf(action)
