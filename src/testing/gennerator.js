@@ -90,3 +90,4 @@ console.log(genSpecial.next())
 
 console.log(genSpecial.next())
 console.log(genSpecial.next()) // {value: undefined, done: true}
+
