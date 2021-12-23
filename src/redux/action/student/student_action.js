@@ -1,5 +1,5 @@
 import { ADD_STUDENT, DELETE_STUDENT, UPDATE_STUDENT, SET_STUDENT, SET_ISLOADING } from './student_type'
-import { getAllStudent } from '../../../api/StudentService'
+import { getAllStudent, searchStudent } from '../../../api/StudentService'
 export function addStudent(payload) {
     return {
         type: ADD_STUDENT,
@@ -22,6 +22,7 @@ export function updateStudent(payload) {
 }
 
 export function setStudent(payload) {
+    console.log(payload)
     return {
         type: SET_STUDENT,
         payload,
@@ -48,3 +49,23 @@ export function fetchStudent() {
         dispacth(setIsLoading(false))
     }
 }
+
+export function fetchSearchStudent(condition = {}) {
+    // return searchStudent(condition).then(data => ({
+    //     type: SET_STUDENT,
+    //     payload: data.searchList,
+    // }))
+    // return setStudent(getAllStudent())
+    // 非fsa 而当前action并不是一个promise 此时就是直接移交给后面的中间件了
+    return {
+        type: SET_STUDENT,
+        payload: getAllStudent(),
+    }
+    // 此时就是遵循fsa格式
+    // return {
+    //     type: 'set-student',
+    //     payload: getAllStudent(),
+    // }
+    // return getAllStudent().then(data => setStudent(data))
+}
+

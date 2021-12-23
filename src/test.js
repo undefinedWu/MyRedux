@@ -1,10 +1,12 @@
-import { createStore, bindActionCreators, combineReducers, applyMiddlewares } from './redux/source'
-import { numType, numAction, studentAction } from './redux/action'
+import { createStore, combineReducers, applyMiddlewares } from './redux/source'
+import { studentAction } from './redux/action'
 import { numReducer } from './redux/reducer/other/redcuer_num'
 import { studentReducer } from './redux/reducer/other/reducer_student'
 import logger from 'redux-logger'
 // import thunk from 'redux-thunk'
 import thunk from './redux/middleWare/redux-thunk'
+// import promise from 'redux-promise'
+import promise from './redux/middleWare/redux-promise'
 
 // import { getAllStudent } from './api/StudentService'
 // const arr = []
@@ -53,10 +55,14 @@ const reducer = combineReducers({
     student: studentReducer,
 })
 
-const store = createStore(reducer, applyMiddlewares(thunk.withExtraArgument({ test: '这是额外的数据' }), logger), {})
+const store = createStore(
+    reducer,
+    applyMiddlewares(promise, thunk.withExtraArgument({ test: '这是额外的数据' }), logger),
+    {},
+)
 
 // const store = applyMiddlewares(logger1, logger2)(createStore)(reducer, {})
-// const num_auto_dispacth = bindActionCreators(numAction, store.dispatch)
+// const num_auto_dispatch = bindActionCreators(numAction, store.dispatch)
 
 // store.subscribe(() => {
 //     console.log('data change1')
@@ -66,7 +72,7 @@ const store = createStore(reducer, applyMiddlewares(thunk.withExtraArgument({ te
 //     console.log('data change2')
 // })
 
-// num_auto_dispacth.addNum()
+// num_auto_dispatch.addNum()
 
 // store.dispatch(numAction.addNum())
 
@@ -81,6 +87,6 @@ const store = createStore(reducer, applyMiddlewares(thunk.withExtraArgument({ te
 //     console.log(data)
 // })
 
-window.dispatch2 = store.dispatch
-
-store.dispatch(studentAction.fetchStudent())
+// store.dispatch(studentAction.fetchStudent())
+// 就是搜索一个
+store.dispatch(studentAction.fetchSearchStudent({ search: '安路' }))
