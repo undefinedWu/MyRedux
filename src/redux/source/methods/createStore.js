@@ -11,6 +11,7 @@ export function createStore(reducer, initialValue, applyMiddleWare) {
     // 订阅函数所在的队列
     let SubscribeQueue = []
 
+    // 主要就是配合applyMiddleware进行使用
     // 此时就是第二个参数或者第三个参数表示一个中间件
     if (typeof initialValue === 'function') {
         return initialValue(createStore)(reducer, applyMiddleWare)
@@ -32,7 +33,6 @@ export function createStore(reducer, initialValue, applyMiddleWare) {
         // 调用订阅函数
         SubscribeQueue.forEach(it => it())
     }
-
     /**
      * 订阅在状态发生变化的是否所触发的函数
      * 返回一个取消订阅的函数
@@ -56,7 +56,7 @@ export function createStore(reducer, initialValue, applyMiddleWare) {
     function getState() {
         return state
     }
-
+    // 进行依次验证
     dispatch(testing.INIT)
 
     return {
