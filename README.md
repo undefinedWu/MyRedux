@@ -30,3 +30,15 @@
     yarn start
     npm start
 ***
+
+## 目录结构
+
+- src
+---- api 主要就是一些接口文档
+---- redux
+-------- action
+-------- middleware 第三方中中间件以及源码
+-------- reducer
+-------- source redux源码
+---- testing 就是了解迭代器和生成器的基本使用
+---- write 就是写了一些面试常见的手写题

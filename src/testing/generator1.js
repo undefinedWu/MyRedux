@@ -23,7 +23,7 @@ const generator = iterable()
 //
 /**
  * 自动迭代生成器中的数据
- * 此函数的问题就是 导致
+ * 此函数的问题就是 因为如果返回的是promise 此时就是会导致当前
  * @param {Generator} generator
  */
 function run(generator) {

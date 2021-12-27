@@ -1,13 +1,14 @@
 import { createStore, combineReducers, applyMiddlewares } from './redux/source'
-import { studentAction } from './redux/action'
+import { studentAction, numAction } from './redux/action'
 import { numReducer } from './redux/reducer/other/redcuer_num'
 import { studentReducer } from './redux/reducer/other/reducer_student'
 import logger from 'redux-logger'
 // import thunk from 'redux-thunk'
-import thunk from './redux/middleWare/redux-thunk'
+// import thunk from './redux/middleWare/redux-thunk'
 // import promise from 'redux-promise'
-import promise from './redux/middleWare/redux-promise'
-
+// import promise from './redux/middleWare/redux-promise'
+import createSagaMiddleware from 'redux-saga'
+import RootSaga from './redux/saga'
 // import { getAllStudent } from './api/StudentService'
 // const arr = []
 // import logger from 'redux-logger'
@@ -55,11 +56,24 @@ const reducer = combineReducers({
     student: studentReducer,
 })
 
+// 创建一个saga中间件
+const sagaMiddleware = createSagaMiddleware();
+
 const store = createStore(
     reducer,
-    applyMiddlewares(promise, thunk.withExtraArgument({ test: '这是额外的数据' }), logger),
+    applyMiddlewares(sagaMiddleware, logger),
     {},
 )
+
+// 启动saga任务 需要传递一个生成器
+// 立即被执行了（自动） 被run了 
+// 在yield关键字后面是一个saga指令 此时才有可能形成阻塞形式
+sagaMiddleware.run(RootSaga)
+
+
+window.increase = function () {
+    store.dispatch(numAction.addNum())
+}
 
 // const store = applyMiddlewares(logger1, logger2)(createStore)(reducer, {})
 // const num_auto_dispatch = bindActionCreators(numAction, store.dispatch)
@@ -89,4 +103,4 @@ const store = createStore(
 
 // store.dispatch(studentAction.fetchStudent())
 // 就是搜索一个
-store.dispatch(studentAction.fetchSearchStudent({ search: '安路' }))
+// store.dispatch(studentAction.fetchSearchStudent({ search: '安路' }))
