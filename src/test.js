@@ -70,11 +70,18 @@ const store = createStore(
 // 在yield关键字后面是一个saga指令 此时才有可能形成阻塞形式
 sagaMiddleware.run(RootSaga)
 
-
 window.increase = function () {
     store.dispatch(numAction.addNum())
 }
-
+window.asyncIncrease = function () {
+    store.dispatch(numAction.asyncAddNum())
+}
+window.addStudent = function () {
+    store.dispatch(studentAction.addStudent({ name: 'chen', age: 20, sex: 1 }))
+}
+window.setStudent = function () {
+    store.dispatch(studentAction.setStudent([]))
+}
 // const store = applyMiddlewares(logger1, logger2)(createStore)(reducer, {})
 // const num_auto_dispatch = bindActionCreators(numAction, store.dispatch)
 

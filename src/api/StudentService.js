@@ -1,5 +1,6 @@
 import { http } from './http'
 export function getAllStudent() {
+    console.log(this, arguments)
     return http.get('/findAll')
 }
 

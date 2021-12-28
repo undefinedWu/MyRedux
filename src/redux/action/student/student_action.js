@@ -22,7 +22,6 @@ export function updateStudent(payload) {
 }
 
 export function setStudent(payload) {
-    console.log(payload)
     return {
         type: SET_STUDENT,
         payload,
