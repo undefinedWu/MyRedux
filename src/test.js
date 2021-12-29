@@ -76,6 +76,9 @@ window.increase = function () {
 window.asyncIncrease = function () {
     store.dispatch(numAction.asyncAddNum())
 }
+window.asyncDecrease = function () {
+    store.dispatch(numAction.asyncDecreaseNum())
+}
 window.addStudent = function () {
     store.dispatch(studentAction.addStudent({ name: 'chen', age: 20, sex: 1 }))
 }
