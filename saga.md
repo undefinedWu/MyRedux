@@ -3,6 +3,7 @@
 ## 基本概念
 
 使用saga中间件之后，此时就是需要启动一个saga任务（主要就是监听用户去分发的一些action），saga任务就是一个**生成器**，内部会自动调用，但在yield后面碰到内部的指令，就可能会阻塞/非阻塞生成器的调用，有可能形成了一些action的监听。
+**saga接受到任何dispatch的action，都先会直接完后进行移交，然后再判断自己的监听任务中时候是否监听了当前actionType，然后去执行对应的。所以在一般情况下，为了不改动reducer，我们都是会分发不存在的action，让saga监听到，执行对应的逻辑，逻辑中分发真正的action，改动仓库中的数据；虽然原本分发的action，是不会再reducer中匹配到，因此不会对数据仓库中的数据改动**
 
 ```markdown
     但生成器中的任务都执行完成了，此时saga任务就是会结束，但是正常情况，saga任务都是不会结束的
@@ -129,20 +130,96 @@ function* asyncDecrease2() {
 }
 yield fork(asyncDecrease2);
 
-// 如果使用takeEvery来实现
-
-// 使用takeLatest 就是重复dispatch一个action的时候 此时就是会先取消上一次任务
-
+// 使用takeLatest 就是重复dispatch一个action的时候 会先取消上一次任务
 yield takeLatest(numType.ASYNC_DECREASE_NUM, function* () {
     yield delay(2000);
     yield put(numAction.decreaseNum())
 })
 ```
 
+```js 做一个自动增加和暂停的
+/**
+ * 流程控制: 监听到autoIncrease之后 转而监听stop
+ */
+function* autoIncrease() {
+    while (true) {
+        // 只有后面停止了 才会重新监听增加
+        yield take(numType.AUTO_INCREASE_NUM)
+        const task = yield fork(function* () {
+            try {
+                while (true) {
+                    yield delay(2000)
+                    yield put(numAction.addNum())
+                }
+            } finally {
+                // 即使当前任务线被取消 当前代码块的逻辑还是会执行 iter.return
+                if (yield cancelled()) {
+                    console.log('当前任务线被取消了')
+                }
+            }
+        })
+        yield take(numType.STOP_INCREASE)
+        yield cancel()
+    }
+}
+// 方法二
+let isStop = false
+function* autoIncrease1() {
+    // 既然要增加 stop就是false
+    isStop = false
+    while (true) {
+        yield delay(2000)
+        // 利用外部进行控制当前是否结束
+        if (isStop) {
+            // 直接结束当前任务
+            break
+        }
+        yield put(numAction.addNum())
+    }
+}
+
+function stop() {
+    isStop = true
+}
+
+yield takeLatest(numType.AUTO_INCREASE_NUM, autoIncrease1)
+
+// 方法三 使用race的形式
+function* autoRaceIncrease() {
+    while (true) {
+        yield take(numType.AUTO_INCREASE_NUM)
+        // 都是会执行的 只要有一者结束了 整个就结束了 重新监听添加
+        yield race({
+            autoIncrease: call(function* () {
+                while (true) {
+                    yield delay(2000)
+                    yield put(numAction.addNum())
+                }
+            }),
+            cancel: take(numType.STOP_INCREASE),
+        })
+    }
+}
+yield fork(autoRaceIncrease)
+```
+
 - cancel(...Tasks): 就是取消一个或多个任务,实际上就是使用generator.return。可以不传递参数，就是取消直接所在的
 
 - takeLatest： 功能和takeEvery保持一致，但是重复监听到，就先销毁前一次的任务线
 
-- cancelled: 就是判断所在任务线时候被取消了
+- cancelled: 就是判断所在任务线时候被取消了。在fianlly模块中的代码是肯定会执行的，然后判断当前任务线是否被取消，进而决定是否执行某代码
 
-- race： 阻塞，可以传递多个saga任务，当有其中一个saga任务执行结束了，当前指令就直接结束。并且当前指令会自动取消其他的任务
+- race： 阻塞，可以传递**多个指令**，当有其中一个指令执行结束了，当前指令就直接结束。并且当前指令会自动取消其他的任务
+
+### redux-actions
+
+**遵循flux标准**
+
+用于简化action、actionCreaotr、reducer的书写
+
+### createAction(s): 根据actionType辅助创建actionCreator
+
+如果需要进行传参，第二个参数就是**传递一个函数**，函数的返回值就是payload，实际调用的函数，就是将对应的信息传递过去
+第三个参数也是一个函数，可以让返回的对象中存在meta字段 就是函数的返回值
+
+### handleAction(s)(actionType | actionCreator, (state, action) => newState, stateDefault): 针对actionType使用reducer进行处理

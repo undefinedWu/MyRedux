@@ -79,11 +79,12 @@ window.asyncIncrease = function () {
 window.asyncDecrease = function () {
     store.dispatch(numAction.asyncDecreaseNum())
 }
-window.addStudent = function () {
-    store.dispatch(studentAction.addStudent({ name: 'chen', age: 20, sex: 1 }))
+window.autoIncrease = function () {
+    store.dispatch(numAction.autoIncrease())
 }
-window.setStudent = function () {
-    store.dispatch(studentAction.setStudent([]))
+
+window.stopIncrease = function () {
+    store.dispatch(numAction.stopIncrease())
 }
 // const store = applyMiddlewares(logger1, logger2)(createStore)(reducer, {})
 // const num_auto_dispatch = bindActionCreators(numAction, store.dispatch)

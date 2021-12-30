@@ -1,4 +1,4 @@
-import { delay, put, takeEvery, fork, take, cancel, takeLatest } from 'redux-saga/effects'
+import { race, delay, put, takeEvery, fork, take, cancel, takeLatest, cancelled, call } from 'redux-saga/effects'
 import { numType, numAction } from '../action'
 
 function* asyncIncrease() {
@@ -67,10 +67,62 @@ function* asyncDecrease2() {
     }
 }
 
-// 主要用于保存上一次的任务对象
+// 使用takeLatest 主要用于保存上一次的任务对象
 function* asyncDecrease3() {
     yield delay(2000)
     yield put(numAction.decreaseNum())
+}
+/**
+ * 流程控制: 监听到autoIncrease之后 转而监听stop
+ */
+function* autoIncrease() {
+    while (true) {
+        // 只有后面停止了 才会重新监听增加
+        yield take(numType.AUTO_INCREASE_NUM)
+        const task = yield fork(function* () {
+            try {
+                while (true) {
+                    yield delay(2000)
+                    yield put(numAction.addNum())
+                }
+            } finally {
+                // 即使当前任务线被取消 当前代码块的逻辑还是会执行 iter.return
+                if (yield cancelled()) {
+                    console.log('当前任务线被取消了')
+                }
+            }
+        })
+        yield take(numType.STOP_INCREASE)
+        yield cancel()
+    }
+}
+
+let isStop = false
+function* autoIncrease1() {
+    // 既然要增加 stop就是false
+    isStop = false
+    while (true) {
+        yield delay(2000)
+        // 利用外部进行控制当前是否结束
+        if (isStop) {
+            // 直接结束当前任务
+            break
+        }
+        yield put(numAction.addNum())
+    }
+}
+
+function stop() {
+    isStop = true
+}
+
+function asyncAction() {
+    return new Promise(resolve => {
+        const time = Math.random(Math.random() * 4000 + 1000)
+        if (Math.random() > 0.5) {
+            setTimeout(resolve, time, { type: 1111 })
+        }
+    })
 }
 
 export default function* numTask() {
@@ -78,10 +130,37 @@ export default function* numTask() {
     // yield takeEvery(numType.ASYNC_DECREASE_NUM, asyncDecrease)
     // 会开启一个任务线 执行当前生成器中的内容
     // yield fork(asyncDecrease2)
+    // yield takeLatest(numType.ASYNC_DECREASE_NUM, asyncDecrease3)
     // takeEvery 底层实现就是利用 fork 所以也是会新开一个任务线 去监听执行
     // task = yield takeEvery(numType.ASYNC_INCREASE_NUM, asyncIncrease)
-    yield takeLatest(numType.ASYNC_DECREASE_NUM, asyncDecrease3)
     // 取消任务线
     // yield cancel(task)
+
+    // 自动增加
+    // yield fork(autoIncrease)
+    // yield takeLatest(numType.AUTO_INCREASE_NUM, autoIncrease1)
+    // yield takeLatest(numType.STOP_INCREASE, stop)
+    yield fork(autoRaceIncrease)
+    // const result = yield race({
+    //     action1: call(asyncAction),
+    //     action2: call(asyncAction),
+    // })
+    // console.log(result)
     console.log('numTask 结束')
+}
+
+function* autoRaceIncrease() {
+    while (true) {
+        yield take(numType.AUTO_INCREASE_NUM)
+        // 都是会执行的 只要有一者结束了 整个就结束了 重新监听添加
+        yield race({
+            autoIncrease: call(function* () {
+                while (true) {
+                    yield delay(2000)
+                    yield put(numAction.addNum())
+                }
+            }),
+            cancel: take(numType.STOP_INCREASE),
+        })
+    }
 }

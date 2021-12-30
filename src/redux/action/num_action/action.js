@@ -1,4 +1,12 @@
-import { ADD_NUM, ASYNC_DECREASE_NUM, DECREASE_NUM, SET_NUM, ASYNC_INCREASE_NUM } from './type'
+import {
+    ADD_NUM,
+    ASYNC_DECREASE_NUM,
+    DECREASE_NUM,
+    SET_NUM,
+    ASYNC_INCREASE_NUM,
+    AUTO_INCREASE_NUM,
+    STOP_INCREASE,
+} from './type'
 
 // 添加
 export function addNum() {
@@ -30,5 +38,17 @@ export function asyncAddNum() {
 export function asyncDecreaseNum() {
     return {
         type: ASYNC_DECREASE_NUM,
+    }
+}
+
+export function autoIncrease() {
+    return {
+        type: AUTO_INCREASE_NUM,
+    }
+}
+
+export function stopIncrease() {
+    return {
+        type: STOP_INCREASE,
     }
 }
