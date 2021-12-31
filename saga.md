@@ -210,16 +210,3 @@ yield fork(autoRaceIncrease)
 - cancelled: 就是判断所在任务线时候被取消了。在fianlly模块中的代码是肯定会执行的，然后判断当前任务线是否被取消，进而决定是否执行某代码
 
 - race： 阻塞，可以传递**多个指令**，当有其中一个指令执行结束了，当前指令就直接结束。并且当前指令会自动取消其他的任务
-
-### redux-actions
-
-**遵循flux标准**
-
-用于简化action、actionCreaotr、reducer的书写
-
-### createAction(s): 根据actionType辅助创建actionCreator
-
-如果需要进行传参，第二个参数就是**传递一个函数**，函数的返回值就是payload，实际调用的函数，就是将对应的信息传递过去
-第三个参数也是一个函数，可以让返回的对象中存在meta字段 就是函数的返回值
-
-### handleAction(s)(actionType | actionCreator, (state, action) => newState, stateDefault): 针对actionType使用reducer进行处理

@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
-// import './basic'
-import './test'
+import './basic'
+// import './test'
 
 ReactDOM.render(
     <React.StrictMode>
